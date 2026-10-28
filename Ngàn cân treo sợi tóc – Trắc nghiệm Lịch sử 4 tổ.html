@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Ngàn cân treo sợi tóc – Trò chơi trắc nghiệm Lịch sử</title>
+<style>
+:root{--bg:#fff8ee;--card:#ffffff;--text:#2b2118;--muted:#7a6a58;--line:#ecdcc6;--accent:#c8102e;--ok:#1f9d55;--okbg:#dff6e8;--bad:#d64545;--badbg:#fde2e2;--t1:#e4572e;--t2:#2e86de;--t3:#16a085;--t4:#8e44ad;--shadow:0 6px 24px rgba(120,80,20,.12);box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#17120d;--card:#241c14;--text:#f6ead8;--muted:#b3a38e;--line:#3a2d20;--okbg:#14382400;--okbg:#17402a;--badbg:#4a2020;--shadow:0 6px 24px rgba(0,0,0,.4);color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#17120d;--card:#241c14;--text:#f6ead8;--muted:#b3a38e;--line:#3a2d20;--okbg:#17402a;--badbg:#4a2020;--shadow:0 6px 24px rgba(0,0,0,.4);color-scheme:dark}
+*{box-sizing:border-box}
+html,body{margin:0}
+body{background:var(--bg);color:var(--text);font-family:"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;line-height:1.5;min-height:100%}
+.wrap{max-width:960px;margin:0 auto;padding:18px 16px 40px}
+header{text-align:center;margin-bottom:16px}
+h1{margin:0;font-size:clamp(1.3rem,4vw,2rem);color:var(--accent);letter-spacing:.3px}
+header p{margin:4px 0 0;color:var(--muted);font-size:.95rem}
+.board{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:18px}
+.team{background:var(--card);border-radius:14px;padding:12px 8px;text-align:center;box-shadow:var(--shadow);border-top:6px solid var(--c);transition:transform .25s,box-shadow .25s}
+.team.active{transform:translateY(-4px) scale(1.03);box-shadow:0 0 0 3px var(--c),var(--shadow)}
+.team b{display:block;color:var(--c);font-size:1rem}
+.team .pts{font-size:clamp(1.6rem,6vw,2.6rem);font-weight:800;transition:transform .3s}
+.team .pts.pop{transform:scale(1.4)}
+.team small{color:var(--muted)}
+.card{background:var(--card);border-radius:18px;padding:22px;box-shadow:var(--shadow);animation:in .4s ease}
+@keyframes in{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
+.top{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;margin-bottom:6px;color:var(--muted);font-weight:600}
+.bar{height:8px;background:var(--line);border-radius:99px;overflow:hidden;margin-bottom:16px}
+.bar i{display:block;height:100%;background:linear-gradient(90deg,var(--t1),var(--accent));transition:width .5s}
+.pick{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-bottom:16px}
+.pick span{font-weight:600}
+.pick button{border:2px solid var(--c);background:transparent;color:var(--c);border-radius:99px;padding:7px 16px;font-weight:700;cursor:pointer;font-size:.95rem;transition:.2s}
+.pick button.on,.pick button:hover{background:var(--c);color:#fff}
+.q{font-size:clamp(1.05rem,2.8vw,1.35rem);font-weight:700;margin:0 0 16px}
+.opts{display:grid;gap:10px}
+.opt{display:flex;gap:12px;align-items:center;text-align:left;width:100%;background:transparent;color:var(--text);border:2px solid var(--line);border-radius:12px;padding:12px 14px;font-size:1rem;cursor:pointer;transition:.2s;font-family:inherit}
+.opt:hover:not(:disabled){border-color:var(--accent);transform:translateX(4px)}
+.opt .l{flex:none;width:32px;height:32px;border-radius:50%;background:var(--line);display:grid;place-items:center;font-weight:800}
+.opt:disabled{cursor:default}
+.opt.ok{background:var(--okbg);border-color:var(--ok)}
+.opt.ok .l{background:var(--ok);color:#fff}
+.opt.bad{background:var(--badbg);border-color:var(--bad);animation:shake .4s}
+.opt.bad .l{background:var(--bad);color:#fff}
+@keyframes shake{25%{transform:translateX(-6px)}75%{transform:translateX(6px)}}
+.fb{margin-top:14px;padding:12px 14px;border-radius:12px;display:none;animation:in .3s}
+.fb.show{display:block}
+.fb.ok{background:var(--okbg);border-left:5px solid var(--ok)}
+.fb.bad{background:var(--badbg);border-left:5px solid var(--bad)}
+.hint{color:var(--bad);font-weight:600;min-height:1.4em;margin:8px 0 0}
+.next{margin-top:16px;display:none;background:var(--accent);color:#fff;border:0;border-radius:99px;padding:12px 28px;font-size:1rem;font-weight:700;cursor:pointer;float:right;transition:.2s}
+.next.show{display:inline-block;animation:in .3s}
+.next:hover{filter:brightness(1.1);transform:scale(1.04)}
+.end{text-align:center}
+.end h2{color:var(--accent);font-size:clamp(1.4rem,5vw,2.2rem);margin:6px 0}
+.rank{display:grid;gap:8px;margin:16px auto;max-width:420px;text-align:left}
+.rank div{display:flex;justify-content:space-between;padding:10px 14px;border-radius:10px;background:var(--bg);border-left:6px solid var(--c);font-weight:700}
+.rank div.w{box-shadow:0 0 0 2px var(--c)}
+.again{background:var(--accent);color:#fff;border:0;border-radius:99px;padding:12px 28px;font-weight:700;font-size:1rem;cursor:pointer}
+@media (max-width:560px){.board{gap:6px}.team{padding:8px 4px}.card{padding:16px}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1>🇻🇳 Vượt qua “Ngàn cân treo sợi tóc”</h1>
+    <p>Việt Nam 1945 – 1946 · Trò chơi trắc nghiệm 4 tổ · Đúng +10 điểm</p>
+  </header>
+  <div class="board" id="board"></div>
+  <div class="card" id="game"></div>
+</div>
+<script>
+const Q=[
+{q:"Theo Hội nghị Potsdam (7–8/1945), quân đội nước nào giải giáp quân Nhật ở phía Bắc vĩ tuyến 16 ở Đông Dương?",o:["Quân đội Anh","Quân đội Mỹ","Quân đội Trung Hoa Dân quốc (Tưởng)","Quân đội Liên Xô"],a:2,e:"Vĩ tuyến 16 là ranh giới: phía Bắc giao cho quân Tưởng, phía Nam giao cho quân Anh."},
+{q:"Theo Hội nghị Potsdam, lực lượng nào vào giải giáp quân Nhật ở phía Nam vĩ tuyến 16?",o:["Quân đội Pháp","Quân đội Anh","Quân đội Mỹ","Quân đội Trung Hoa Dân quốc"],a:1,e:"Quân Anh được giao nhiệm vụ ở miền Nam và sau đó tạo điều kiện cho Pháp quay lại."},
+{q:"Tướng Gracey (Anh) đã tiếp tay cho Pháp đánh chiếm Sài Gòn vào thời điểm nào?",o:["Rạng sáng 23/9/1945","Ngày 2/9/1945","Ngày 6/3/1946","Ngày 19/12/1946"],a:0,e:"Gracey thả tù binh Pháp, trang bị vũ khí, dung túng Pháp nổ súng chiếm Sài Gòn rạng sáng 23/9/1945."},
+{q:"Hiệp ước Hoa – Pháp (28/2/1946) có nội dung cốt lõi nào?",o:["Tưởng công nhận độc lập của Việt Nam","Pháp và Tưởng cùng đánh quân Nhật","Tưởng cho Pháp ra miền Bắc thay giải giáp quân Nhật để đổi lấy quyền lợi từ Pháp","Pháp rút hết quân khỏi Đông Dương"],a:2,e:"Tưởng bắt tay Pháp, đồng ý để Pháp thay thế ở miền Bắc, đổi lại được hưởng quyền lợi."},
+{q:"Vì sao Mỹ làm ngơ, ngầm ủng hộ Pháp quay lại Đông Dương?",o:["Mỹ muốn ủng hộ Việt Nam độc lập","Mỹ lôi kéo Pháp làm đồng minh chống Liên Xô, ngăn chặn cộng sản ở châu Á","Mỹ muốn Anh kiểm soát Đông Dương","Mỹ hoàn toàn không quan tâm khu vực này"],a:1,e:"Mỹ cần Pháp trong cuộc đối đầu với Liên Xô và muốn ngăn chặn cộng sản ở châu Á."},
+{q:"Dã tâm của De Gaulle (Pháp) đối với Đông Dương là gì?",o:["Trao trả độc lập cho Đông Dương","Nhường Đông Dương cho Trung Hoa","Lấy lại “hòn ngọc Viễn Đông” để tái thiết đất nước và khôi phục vị thế cường quốc","Biến Đông Dương thành thuộc địa của Anh"],a:2,e:"Pháp coi Đông Dương là nguồn lực quan trọng để phục hồi vị thế cường quốc."},
+{q:"Hậu quả của “giặc đói” và tình trạng ngân quỹ quốc gia lúc bấy giờ là gì?",o:["Khoảng 2 triệu người chết; ngân quỹ chỉ còn 1,2 triệu đồng Đông Dương","Khoảng 200 nghìn người chết; ngân quỹ còn 12 triệu đồng","Khoảng 5 triệu người chết; ngân quỹ còn 100 triệu đồng","Không ai chết đói; ngân quỹ dồi dào"],a:0,e:"Nạn đói làm khoảng 2 triệu người chết, kho bạc quốc gia gần như trống rỗng (1,2 triệu đồng)."},
+{q:"“Giặc dốt” thể hiện ở tỉ lệ dân số mù chữ là bao nhiêu?",o:["Khoảng 30%","Khoảng 50%","Khoảng 70%","Hơn 90%"],a:3,e:"Hơn 90% dân số mù chữ; Chính phủ đã lập “Bình dân học vụ” để xóa nạn mù chữ."},
+{q:"Trước 6/3/1946, sách lược ngoại giao của Chủ tịch Hồ Chí Minh là gì?",o:["Đánh cả Tưởng lẫn Pháp cùng lúc","Hòa hoãn với quân Tưởng ở miền Bắc, tập trung đánh Pháp ở miền Nam","Liên minh với Pháp chống Tưởng","Cầu viện quân đội Mỹ"],a:1,e:"Hòa Tưởng ở miền Bắc để rảnh tay chống Pháp xâm lược trở lại ở miền Nam."},
+{q:"Việc ký Hiệp định Sơ bộ (6/3/1946) và Tạm ước (14/9/1946) nhằm mục đích chính nào?",o:["Từ bỏ độc lập để giữ hòa bình","Chia đôi đất nước với Pháp","Mượn tay Pháp đuổi 20 vạn quân Tưởng về nước, tranh thủ thời gian củng cố lực lượng","Nhờ Pháp giúp xây dựng kinh tế lâu dài"],a:2,e:"Đây là sách lược “dĩ bất biến, ứng vạn biến”: giữ vững độc lập, linh hoạt hòa hoãn để câu giờ."}
+];
+const T=[{n:"Tổ 1",c:"var(--t1)"},{n:"Tổ 2",c:"var(--t2)"},{n:"Tổ 3",c:"var(--t3)"},{n:"Tổ 4",c:"var(--t4)"}];
+let i,sc,team,done;
+const $=s=>document.querySelector(s),L="ABCD";
+function board(){ $("#board").innerHTML=T.map((t,k)=>`<div class="team ${team===k?'active':''}" style="--c:${t.c}"><b>${t.n}</b><div class="pts" id="p${k}">${sc[k]}</div><small>điểm</small></div>`).join(""); }
+function start(){ i=0;sc=[0,0,0,0];team=null;done=false;board();show(); }
+function show(){
+  done=false;team=null;board();const q=Q[i];
+  $("#game").innerHTML=`<div class="top"><span>Câu ${i+1}/${Q.length}</span><span>Đúng +10đ · Sai +0đ</span></div>
+  <div class="bar"><i style="width:${i/Q.length*100}%"></i></div>
+  <div class="pick"><span>Tổ đang trả lời:</span>${T.map((t,k)=>`<button style="--c:${t.c}" data-t="${k}">${t.n}</button>`).join("")}</div>
+  <p class="q">${q.q}</p>
+  <div class="opts">${q.o.map((x,k)=>`<button class="opt" data-k="${k}"><span class="l">${L[k]}</span><span>${x}</span></button>`).join("")}</div>
+  <p class="hint" id="hint"></p><div class="fb" id="fb"></div>
+  <button class="next" id="next">${i==Q.length-1?"Xem kết quả 🏆":"Câu tiếp theo →"}</button><div style="clear:both"></div>`;
+  document.querySelectorAll(".pick button").forEach(b=>b.onclick=()=>{team=+b.dataset.t;document.querySelectorAll(".pick button").forEach(x=>x.classList.toggle("on",x===b));$("#hint").textContent="";board();});
+  document.querySelectorAll(".opt").forEach(b=>b.onclick=()=>answer(+b.dataset.k));
+  $("#next").onclick=()=>{i++;i<Q.length?show():finish();};
+}
+function answer(k){
+  if(done)return;
+  if(team===null){$("#hint").textContent="⚠️ Hãy chọn tổ đang trả lời trước khi chọn đáp án!";return;}
+  done=true;const q=Q[i],ok=k===q.a;
+  document.querySelectorAll(".opt").forEach((b,x)=>{b.disabled=true;if(x===q.a)b.classList.add("ok");else if(x===k)b.classList.add("bad");});
+  if(ok){sc[team]+=10;board();const p=$("#p"+team);p.classList.add("pop");setTimeout(()=>p.classList.remove("pop"),350);}
+  const f=$("#fb");f.className="fb show "+(ok?"ok":"bad");
+  f.innerHTML=(ok?`✅ <b>Chính xác! ${T[team].n} +10 điểm.</b>`:`❌ <b>Chưa đúng. ${T[team].n} không có điểm.</b> Đáp án đúng: ${L[q.a]}.`)+`<br>💡 ${q.e}`;
+  $("#next").classList.add("show");
+}
+function finish(){
+  const max=Math.max(...sc),w=sc.map((s,k)=>s===max?k:-1).filter(k=>k>=0);
+  const order=[0,1,2,3].sort((a,b)=>sc[b]-sc[a]);
+  const msg=w.length>1?`Đồng hạng nhất: ${w.map(k=>T[k].n).join(", ")} – ${max} điểm`:`${T[w[0]].n} giành chiến thắng với ${max} điểm`;
+  $("#game").innerHTML=`<div class="end"><div style="font-size:3rem">🏆🎉</div><h2>Chúc mừng!</h2><p style="font-size:1.15rem;font-weight:700">${msg}</p>
+  <div class="rank">${order.map((k,r)=>`<div class="${sc[k]===max?'w':''}" style="--c:${T[k].c}"><span>${r+1}. ${T[k].n}</span><span>${sc[k]}đ</span></div>`).join("")}</div>
+  <button class="again" id="again">Chơi lại 🔄</button></div>`;
+  $("#again").onclick=start;board();
+}
+start();
+</script>
+</body>
+</html>
